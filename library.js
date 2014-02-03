@@ -30,7 +30,9 @@
 	Designer.addScripts = function(scripts, callback) {
 		return scripts.concat([
 				'plugins/public/lib/designer.js',
-				'plugins/public/vendor/ace/ace.min.js'
+				'plugins/public/vendor/ace/ace.min.js',
+				'plugins/public/vendor/ace/worker-css.js',
+				'plugins/public/vendor/ace/mode-css.js'
 			]);
 	};
 

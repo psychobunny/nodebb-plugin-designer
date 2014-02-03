@@ -78,7 +78,7 @@
 				});
 
 				editor = ace.edit("editor");
-			    editor.setTheme("ace/theme/monokai");
+			    //editor.setTheme("ace/theme/monokai");
 			    editor.getSession().setMode("ace/mode/css");
 
 			    editor.getSession().on('change', function(){
