@@ -10,6 +10,8 @@
 
 				$('body').on('contextmenu', function(ev) {
 					if (active) {
+						if ($(ev.target).parents('.designer').length) return true;
+
 						var parents = $(ev.target).parents(),
 							nodelist = [];
 
@@ -60,10 +62,14 @@
 					}
 				});
 
-				$('body').append('<div class="designer"><div id="editor"></div><i class="fa fa-pencil fa-2x"></i><i class="fa fa-save fa-2x"></i><i class="fa fa-code fa-2x"></i></div>');
+				$('body').append('<div class="designer"><div id="editor"></div><div class="design-menu"></div><i title="Toggle Design Mode" class="fa fa-pencil fa-2x"></i><i title="Save CSS" class="fa fa-save fa-2x"></i><i title="Show All CSS" class="fa fa-code fa-2x"></i></div>');
 				$('head').append('<style type="text/css" id="designer-style"></style>');
 
 				style = $('#designer-style');	
+
+				$('.designer i').tooltip({
+					position: 'top'
+				});
 
 				jQuery.get('/plugins/public/compiled.css', function(data) {
 					style.html(data.toString());
@@ -79,30 +85,36 @@
 				});
 
 				editor = ace.edit("editor");
-			    //editor.setTheme("ace/theme/monokai");
+			    // editor.setTheme("ace/theme/idle_fingers"); can't figure this out :/
 			    editor.getSession().setMode("ace/mode/css");
 
 			    editor.getSession().on('change', function(){
 					// this is so stupidly useless
 				});
 
-				$('.designer .fa-save').on('click', function() {
+				$('.ace_text-input').on('keyup', function() {
 					var regex = new RegExp(editing + "[\\s\\S]*?}", 'gi'),
 			    		html = style.html();
 
-			    	if (editing === null) {
-			    		return;
-			    	} else if (editing !== "all") {
+			    	//if (editing === null) {
+			    	//	return;
+			    	//} else 
+			    	if (editing !== "all") {
 			    		if (html.match(regex)) {
 				    		style.html(html.replace(regex, editor.getValue()));
 				    	} else {
 				    		style.html(html + '\n' + editor.getValue());
 				    	}	
 			    	} else {
+			    		console.log('here');
 			    		style.html(editor.getValue());
 			    	}
-			    	
-			    	socket.emit('admin.designer.save', style.html());
+				});
+
+				$('.designer .fa-save').on('click', function() {
+			    	socket.emit('admin.designer.save', style.html(), function() {
+			    		app.alertSuccess('Saved Custom CSS.');
+			    	});
 				});
 			}
 		});

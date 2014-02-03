@@ -17,6 +17,7 @@
     },
     "css": [
         "public/designer.css",
-        "public/compiled.css"
+        "public/compiled.css",
+        "public/vendor/ace/theme/theme-idle_fingers.css"
     ]
 }
