@@ -72,6 +72,11 @@
 					active = $(this).parent().toggleClass('active').hasClass('active');
 				});
 
+				designer = $('.designer .fa-code').on('click', function() {
+					editor.getSession().setValue(style.html());
+					editing = "all";
+				});
+
 				editor = ace.edit("editor");
 			    editor.setTheme("ace/theme/monokai");
 			    editor.getSession().setMode("ace/mode/css");
@@ -84,12 +89,18 @@
 					var regex = new RegExp(editing + "[\\s\\S]*?}", 'gi'),
 			    		html = style.html();
 
-			    	if (html.match(regex)) {
-			    		style.html(html.replace(regex, editor.getValue()));
+			    	if (editing === null) {
+			    		return;
+			    	} else if (editing !== "all") {
+			    		if (html.match(regex)) {
+				    		style.html(html.replace(regex, editor.getValue()));
+				    	} else {
+				    		style.html(html + '\n' + editor.getValue());
+				    	}	
 			    	} else {
-			    		style.html(html + '\n' + editor.getValue());
+			    		style.html(editor.getValue());
 			    	}
-
+			    	
 			    	socket.emit('admin.designer.save', style.html());
 				});
 			}
