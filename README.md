@@ -9,4 +9,4 @@ This NodeBB plugin allows administrators to visually edit the CSS of each templa
 
 ## Installation
 
-    Clone this repo into your node_modules directory.
+    npm install nodebb-plugin-designer
