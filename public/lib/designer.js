@@ -32,17 +32,24 @@
 						nodelist = nodelist.reverse().join(' ');
 						editing = nodelist;
 
-						editor.getSession().setValue(editing + ' {\n\n}');
+						var regex = new RegExp(editing + "[\\s\\S]*?}", 'gi'),
+			    			html = style.html();
+
+			    		if (html.match(regex)) {
+			    			editor.getSession().setValue(html.match(regex)[0]);
+			    		} else {
+							editor.getSession().setValue(editing + ' {\n\n}');
+			    		}
 
 						ev.preventDefault();
 					}
 				});
 
-				$('body').append('<div class="designer"><div id="editor"></div><i class="fa fa-pencil-square fa-2x"></i></div>');
+				$('body').append('<div class="designer"><div id="editor"></div><i class="fa fa-pencil fa-2x"></i><i class="fa fa-save fa-2x"></i></div>');
 				$('head').append('<style type="text/css" id="designer-style"></style>')
 
 				style = $('#designer-style');
-				designer = $('.designer i').on('click', function() {
+				designer = $('.designer .fa-pencil').on('click', function() {
 					active = $(this).parent().toggleClass('active').hasClass('active');
 				});
 
@@ -51,7 +58,11 @@
 			    editor.getSession().setMode("ace/mode/css");
 
 			    editor.getSession().on('change', function(){
-			    	var regex = new RegExp(editing + "[\\s\\S]*?}", 'gi'),
+					// this is so stupidly useless
+				});
+
+				$('.designer .fa-save').on('click', function() {
+					var regex = new RegExp(editing + "[\\s\\S]*?}", 'gi'),
 			    		html = style.html();
 
 			    	if (html.match(regex)) {
@@ -63,7 +74,6 @@
 			    		console.log('creating');
 			    		style.html(html + '\n' + editor.getValue());
 			    	}
-					
 				});
 			}
 		});
