@@ -25,13 +25,14 @@
 									nodelist.push(parents[p].nodeName);
 								}
 							}
-
-							if (parents[p].nodeName === 'HTML') break;
 						}
 
+						// curious how parents() is ordered. if fixed in future versions of jQ look here first.
+						var mainElement = nodelist.pop();
 						nodelist = nodelist.reverse();
+						nodelist.push(mainElement);
 
-						if (previousTarget === ev.target) {
+						if (previousTarget === ev.target && traversedParents < (nodelist.length - 1)) {
 							traversedParents++;
 							for (var i = 0, ii = traversedParents; i<ii; i++) {
 								if (nodelist.length > 1) {
