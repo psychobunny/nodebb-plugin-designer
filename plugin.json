@@ -1,0 +1,17 @@
+{
+	"id": "nodebb-plugin-designer",
+	"name": "NodeBB Theme Designer Plugin",
+	"description": "This NodeBB plugin allows administrators to visually edit the CSS of each template live on the forum.",
+	"url": "https://github.com/psychobunny/nodebb-plugin-designer",
+	"library": "./library.js",
+	"hooks": [
+		{ "hook": "filter:scripts.get", "method": "addScripts", "callbacked": false }
+	],
+    "staticDirs": {
+        "public": "public"
+    },
+    "css": [
+        "public/designer.css",
+        "public/compiled.css"
+    ]
+}
