@@ -5,7 +5,12 @@
 	"url": "https://github.com/psychobunny/nodebb-plugin-designer",
 	"library": "./library.js",
 	"hooks": [
-		{ "hook": "filter:scripts.get", "method": "addScripts", "callbacked": false }
+		{
+			"hook": "filter:scripts.get", "method": "addScripts", "callbacked": false
+		},
+		{
+			"hook": "action:app.load", "method": "init", "callbacked": false
+		}
 	],
     "staticDirs": {
         "public": "public"

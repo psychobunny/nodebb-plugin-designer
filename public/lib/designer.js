@@ -66,14 +66,12 @@
 			    		html = style.html();
 
 			    	if (html.match(regex)) {
-			    		console.log('replacing');
-			    		//style.html(html + '\n' + editor.getValue());
 			    		style.html(html.replace(regex, editor.getValue()));
-			    		console.log(style.html());
 			    	} else {
-			    		console.log('creating');
 			    		style.html(html + '\n' + editor.getValue());
 			    	}
+
+			    	socket.emit('admin.designer.save', style.html());
 				});
 			}
 		});
