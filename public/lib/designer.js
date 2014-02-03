@@ -2,7 +2,7 @@
 	"use strict";
 
 	jQuery('document').ready(function() {
-		var initialized = false, active = false, designer = null, editor, style, editing;
+		var initialized = false, active = false, designer = null, editor, style, editing = "", previousTarget, traversedParents = 0;
 		
 		$(window).on('action:connected', function() {
 			if (app.isAdmin && !initialized) {
@@ -29,10 +29,24 @@
 							if (parents[p].nodeName === 'HTML') break;
 						}
 
-						nodelist = nodelist.reverse().join(' ');
-						editing = nodelist;
+						nodelist = nodelist.reverse();
 
-						var regex = new RegExp(editing + "[\\s\\S]*?}", 'gi'),
+						if (previousTarget === ev.target) {
+							traversedParents++;
+							for (var i = 0, ii = traversedParents; i<ii; i++) {
+								if (nodelist.length > 1) {
+									nodelist.pop();
+								}
+							}
+						} else {
+							traversedParents = 0;
+						}
+
+						previousTarget = ev.target;
+
+						editing = nodelist.join(' ');
+
+						var regex = new RegExp(editing + " {[\\s\\S]*?}", 'gi'),
 			    			html = style.html();
 
 			    		if (html.match(regex)) {
