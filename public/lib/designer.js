@@ -6,7 +6,7 @@
 		
 		$(window).on('action:connected', function() {
 			if (app.isAdmin && !initialized) {
-				initialized = true;	
+				initialized = true;
 
 				$('body').on('contextmenu', function(ev) {
 					if (active) {
@@ -45,10 +45,15 @@
 					}
 				});
 
-				$('body').append('<div class="designer"><div id="editor"></div><i class="fa fa-pencil fa-2x"></i><i class="fa fa-save fa-2x"></i></div>');
-				$('head').append('<style type="text/css" id="designer-style"></style>')
+				$('body').append('<div class="designer"><div id="editor"></div><i class="fa fa-pencil fa-2x"></i><i class="fa fa-save fa-2x"></i><i class="fa fa-code fa-2x"></i></div>');
+				$('head').append('<style type="text/css" id="designer-style"></style>');
 
-				style = $('#designer-style');
+				style = $('#designer-style');	
+
+				jQuery.get('/plugins/public/compiled.css', function(data) {
+					style.html(data.toString());
+				});
+
 				designer = $('.designer .fa-pencil').on('click', function() {
 					active = $(this).parent().toggleClass('active').hasClass('active');
 				});
