@@ -2,7 +2,22 @@
 	"use strict";
 
 	jQuery('document').ready(function() {
-		var initialized = false, active = false, designer = null, editor, style, editing = "", previousTarget, traversedParents = 0;
+		var initialized = false, active = false, designer = null, editor, style, editing = "", previousTarget, traversedParents = 0, activeElement = null;
+		
+		function replaceIntoStyle() {
+			var regex = new RegExp(editing + "[\\s\\S]*?}", 'gi'),
+	    		html = style.html();
+
+	    	if (editing !== "all") {
+	    		if (html.match(regex)) {
+		    		style.html(html.replace(regex, editor.getValue()));
+		    	} else {
+		    		style.html(html + '\n' + editor.getValue());
+		    	}	
+	    	} else {
+	    		style.html(editor.getValue());
+	    	}
+		}
 		
 		$(window).on('action:connected', function() {
 			if (app.isAdmin && !initialized) {
@@ -58,11 +73,15 @@
 							editor.getSession().setValue(editing + ' {\n\n}');
 			    		}
 
+			    		activeElement = ev.target;
+
+			    		$('.dragging').removeClass('dragging').draggable('destroy');
+
 						ev.preventDefault();
 					}
 				});
 
-				$('body').append('<div class="designer"><div id="editor"></div><div class="design-menu"></div><i title="Toggle Design Mode" class="fa fa-pencil fa-2x"></i><i title="Save CSS" class="fa fa-save fa-2x"></i><i title="Show All CSS" class="fa fa-code fa-2x"></i></div>');
+				$('body').append('<div class="designer"><div id="editor"></div><div class="design-menu"></div><i title="Toggle Design Mode" class="fa fa-pencil fa-2x"></i><i title="Save CSS" class="fa fa-save fa-2x"></i><i title="Show All CSS" class="fa fa-code fa-2x"></i><i title="Drag and Drop" class="fa fa-arrows fa-2x"></i></div>');
 				$('head').append('<style type="text/css" id="designer-style"></style>');
 
 				style = $('#designer-style');	
@@ -77,11 +96,17 @@
 
 				designer = $('.designer .fa-pencil').on('click', function() {
 					active = $(this).parent().toggleClass('active').hasClass('active');
+					if (!active) {
+						activeElement = null;
+						$('.dragging').removeClass('dragging').draggable('destroy');
+					}
 				});
 
 				designer = $('.designer .fa-code').on('click', function() {
 					editor.getSession().setValue(style.html());
 					editing = "all";
+					activeElement = null;
+					$('.dragging').removeClass('dragging').draggable('destroy');
 				});
 
 				editor = ace.edit("editor");
@@ -93,22 +118,26 @@
 				});
 
 				$('.ace_text-input').on('keyup', function() {
-					var regex = new RegExp(editing + "[\\s\\S]*?}", 'gi'),
-			    		html = style.html();
+					replaceIntoStyle();
+				});
 
-			    	//if (editing === null) {
-			    	//	return;
-			    	//} else 
-			    	if (editing !== "all") {
-			    		if (html.match(regex)) {
-				    		style.html(html.replace(regex, editor.getValue()));
-				    	} else {
-				    		style.html(html + '\n' + editor.getValue());
-				    	}	
-			    	} else {
-			    		console.log('here');
-			    		style.html(editor.getValue());
-			    	}
+				$('.designer .fa-arrows').on('click', function() {
+					if (activeElement) {
+						$(activeElement).addClass('dragging').draggable({
+							stop: function() {
+								var value = editor.getValue();
+								value.replace(/left:\s*?/, '')
+
+								value = value.replace(/(^left)|([\s]*left).*/gi, '')
+											.replace(/(^top)|([\s]*top).*/gi, '')
+											.replace(/(^position)|([\s]*position).*/gi, '');
+
+								editor.setValue(value.replace('}', '\t' + 'left: ' + activeElement.style.left + ';\n\ttop: ' + activeElement.style.top + ';\n\tposition: relative;\n}'));
+
+								replaceIntoStyle();
+							}
+						});
+					}
 				});
 
 				$('.designer .fa-save').on('click', function() {
